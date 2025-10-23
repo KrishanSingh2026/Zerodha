@@ -161,27 +161,6 @@ app.get("/allOrders", async (req, res) => {
   res.json(allOrders);
 });
 
-const path = require("path");
-
-// Serve frontend build
-app.use("/", express.static(path.join(__dirname, "../frontend/build")));
-
-// Serve dashboard build
-app.use(
-  "/dashboard",
-  express.static(path.join(__dirname, "../dashboard/build"))
-);
-
-// React Router fallback (for frontend routes)
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
-});
-
-// React Router fallback (for dashboard routes)
-app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dashboard/build/index.html"));
-});
-
 // Start Server
 app.listen(PORT, () => {
   console.log(`App is listening on ${PORT}`);
