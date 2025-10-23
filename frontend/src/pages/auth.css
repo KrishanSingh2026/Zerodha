@@ -1,0 +1,176 @@
+/* Auth Pages Container - Only for Login and Signup pages */
+.auth-page-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(143, 187, 204, 1) 35%,
+    rgba(0, 212, 255, 1) 100%
+  );
+  padding: 2rem 1rem;
+}
+
+/* Form Container */
+.form_container {
+  background-color: #fff;
+  padding: 2rem 3rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1);
+}
+
+.form_container > h2 {
+  margin-block: 1rem;
+  padding-block: 0.6rem;
+  color: rgba(0, 212, 255, 1);
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.form_container > form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.form_container form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form_container label {
+  font-size: 1rem;
+  color: #656262;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+
+.form_container input {
+  border: none;
+  padding: 0.8rem 0.5rem;
+  border-bottom: 2px solid #ddd;
+  font-size: 1rem;
+  outline: none;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.form_container input:focus {
+  border-bottom-color: rgba(0, 212, 255, 1);
+}
+
+.form_container input::placeholder {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #999;
+}
+
+.form_container button {
+  background-color: rgba(0, 212, 255, 1);
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  margin-top: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.form_container button:hover {
+  background-color: rgba(0, 190, 230, 1);
+}
+
+.form_container button:active {
+  transform: scale(0.98);
+}
+
+.form_container button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.form_container span {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.form_container span a {
+  text-decoration: none;
+  color: rgba(0, 212, 255, 1);
+  font-weight: 600;
+}
+
+.form_container span a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design for Auth Pages */
+@media only screen and (max-width: 768px) {
+  .form_container {
+    padding: 1.5rem 2rem;
+    max-width: 90%;
+  }
+
+  .form_container > h2 {
+    font-size: 1.5rem;
+  }
+
+  .form_container input {
+    font-size: 0.95rem;
+    padding: 0.7rem 0.4rem;
+  }
+
+  .form_container button {
+    padding: 0.65rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .auth-page-wrapper {
+    padding: 1rem 0.5rem;
+  }
+
+  .form_container {
+    padding: 1.2rem 1.5rem;
+    max-width: 95%;
+  }
+
+  .form_container > h2 {
+    font-size: 1.3rem;
+    margin-block: 0.8rem;
+  }
+
+  .form_container > form {
+    gap: 1.2rem;
+  }
+
+  .form_container label {
+    font-size: 0.9rem;
+  }
+
+  .form_container input {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.3rem;
+  }
+
+  .form_container button {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .form_container span {
+    font-size: 0.85rem;
+  }
+}
