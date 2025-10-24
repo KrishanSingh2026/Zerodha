@@ -29,13 +29,12 @@ module.exports.Signup = async (req, res, next) => {
     // Generate token
     const token = createSecretToken(user._id);
 
-    // Set cookie with consistent settings
+    // FIXED: Cookie settings for cross-domain (Render deployment)
     res.cookie("token", token, {
-      withCredentials: true,
-      httpOnly: false, // Changed to false to match login
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: 3 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true, // Required for HTTPS
+      sameSite: "none", // Required for cross-domain
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.status(201).json({
@@ -85,13 +84,12 @@ module.exports.Login = async (req, res, next) => {
     // Generate token
     const token = createSecretToken(user._id);
 
-    // Set cookie
+    // FIXED: Cookie settings for cross-domain (Render deployment)
     res.cookie("token", token, {
-      withCredentials: true,
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: 3 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true, // Required for HTTPS
+      sameSite: "none", // Required for cross-domain
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.status(200).json({
