@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useCookies } from "react-cookie";
+import API_URL from "../config";
 import "./auth.css";
 
 const Signup = () => {
@@ -56,7 +57,7 @@ const Signup = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3002/signup",
+        `${API_URL}/signup`,
         {
           ...inputValue,
         },
