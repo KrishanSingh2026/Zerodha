@@ -1,3 +1,3 @@
-const API_URL = "http://localhost:3002";
+const API_URL = "https://zerodha-shxy.onrender.com";
 
 export default API_URL;
