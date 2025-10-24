@@ -96,6 +96,7 @@ module.exports.Login = async (req, res, next) => {
       message: "User logged in successfully",
       success: true,
       user: user.username,
+      token: token,
     });
   } catch (error) {
     console.error("Login error:", error);

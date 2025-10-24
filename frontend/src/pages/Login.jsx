@@ -58,8 +58,9 @@ const Login = () => {
         { withCredentials: true }
       );
       console.log(data);
-      const { success, message, user } = data;
+      const { success, message, user, token } = data;
       if (success) {
+        localStorage.setItem("token", token);
         handleSuccess(`Welcome back, ${user}!`);
         setTimeout(() => {
           navigate("/");
