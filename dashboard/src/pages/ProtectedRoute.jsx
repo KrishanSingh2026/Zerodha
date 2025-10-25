@@ -1,16 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
 
 const ProtectedRoute = ({ children }) => {
-  const [cookies] = useCookies(["token"]);
+  const [isChecking, setIsChecking] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // If no token, redirect to login
-  if (!cookies.token) {
+  useEffect(() => {
+    // Check for token
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+    setIsChecking(false);
+  }, []);
+
+  // Show loading while checking
+  if (isChecking) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // If token exists, render the protected component
+  // Show protected content
   return children;
 };
 

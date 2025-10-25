@@ -1,28 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { useCookies } from "react-cookie";
 import API_URL from "../config";
 import "./auth.css";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [cookies] = useCookies(["token"]);
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
     username: "",
   });
   const { email, password, username } = inputValue;
-
-  // Redirect if already logged in
-  useEffect(() => {
-    const localToken = localStorage.getItem("token");
-    if (cookies.token || localToken) {
-      navigate("/", { replace: true });
-    }
-  }, []);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
