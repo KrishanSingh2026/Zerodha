@@ -17,7 +17,8 @@ const Login = () => {
 
   // Redirect if already logged in
   React.useEffect(() => {
-    if (cookies.token) {
+    const localToken = localStorage.getItem("token");
+    if (cookies.token || localToken) {
       navigate("/");
     }
   }, [cookies, navigate]);

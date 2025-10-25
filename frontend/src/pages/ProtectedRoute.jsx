@@ -4,7 +4,6 @@ import { useCookies } from "react-cookie";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
-  const [cookies] = useCookies(["token"]);
 
   // If no token, redirect to login
   if (!token) {

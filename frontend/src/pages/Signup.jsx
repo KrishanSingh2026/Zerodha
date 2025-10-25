@@ -18,7 +18,8 @@ const Signup = () => {
 
   // Redirect if already logged in
   React.useEffect(() => {
-    if (cookies.token) {
+    const localToken = localStorage.getItem("token");
+    if (cookies.token || localToken) {
       navigate("/");
     }
   }, [cookies, navigate]);
@@ -63,8 +64,15 @@ const Signup = () => {
         },
         { withCredentials: true }
       );
-      const { success, message, user } = data;
+
+      const { success, message, user, token } = data;
+
       if (success) {
+        // Save token to localStorage
+        if (token) {
+          localStorage.setItem("token", token);
+        }
+
         handleSuccess(`Welcome to Zerodha, ${user}!`);
         setTimeout(() => {
           navigate("/");
@@ -79,8 +87,8 @@ const Signup = () => {
           "Something went wrong. Please try again."
       );
     }
+
     setInputValue({
-      ...inputValue,
       email: "",
       password: "",
       username: "",
