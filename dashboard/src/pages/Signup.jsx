@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useCookies } from "react-cookie";
+import API_URL from "../config";
 import "./auth.css";
 
 const Signup = () => {
@@ -17,7 +18,8 @@ const Signup = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (cookies.token) {
+    const localToken = localStorage.getItem("token");
+    if (cookies.token || localToken) {
       navigate("/");
     }
   }, [cookies, navigate]);
@@ -56,14 +58,21 @@ const Signup = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3002/signup",
+        `${API_URL}/signup`, // FIXED: Use API_URL
         {
           ...inputValue,
         },
         { withCredentials: true }
       );
-      const { success, message } = data;
+
+      const { success, message, token } = data; // Get token from response
+
       if (success) {
+        // Save token to localStorage
+        if (token) {
+          localStorage.setItem("token", token);
+        }
+
         handleSuccess(`Welcome! Account created successfully!`);
         setTimeout(() => {
           navigate("/");
@@ -78,8 +87,8 @@ const Signup = () => {
           "Something went wrong. Please try again."
       );
     }
+
     setInputValue({
-      ...inputValue,
       email: "",
       password: "",
       username: "",

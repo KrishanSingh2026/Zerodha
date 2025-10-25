@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useCookies } from "react-cookie";
+import API_URL from "../config";
 import "./auth.css";
 
 const Login = () => {
@@ -16,7 +17,8 @@ const Login = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (cookies.token) {
+    const localToken = localStorage.getItem("token");
+    if (cookies.token || localToken) {
       navigate("/");
     }
   }, [cookies, navigate]);
@@ -50,15 +52,21 @@ const Login = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3002/login",
+        `${API_URL}/login`, // Use API_URL
         {
           ...inputValue,
         },
         { withCredentials: true }
       );
       console.log(data);
-      const { success, message } = data;
+      const { success, message, token } = data; //  Get token from response
+
       if (success) {
+        // Save token to localStorage
+        if (token) {
+          localStorage.setItem("token", token);
+        }
+
         handleSuccess(`Welcome back!`);
         setTimeout(() => {
           navigate("/");
@@ -73,6 +81,7 @@ const Login = () => {
           "Something went wrong. Please try again."
       );
     }
+
     setInputValue({
       ...inputValue,
       email: "",
