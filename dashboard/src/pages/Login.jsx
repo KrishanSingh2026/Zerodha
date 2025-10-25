@@ -19,7 +19,7 @@ const Login = () => {
   useEffect(() => {
     const localToken = localStorage.getItem("token");
     if (cookies.token || localToken) {
-      navigate("/");
+      navigate("/", { replace: true });
     }
   }, []);
 
@@ -86,6 +86,7 @@ const Login = () => {
       ...inputValue,
       email: "",
       password: "",
+      username: "",
     });
   };
 

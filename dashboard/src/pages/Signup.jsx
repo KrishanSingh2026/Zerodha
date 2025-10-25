@@ -20,7 +20,7 @@ const Signup = () => {
   useEffect(() => {
     const localToken = localStorage.getItem("token");
     if (cookies.token || localToken) {
-      navigate("/");
+      navigate("/", { replace: true });
     }
   }, []);
 
