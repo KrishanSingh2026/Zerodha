@@ -22,7 +22,7 @@ const Signup = () => {
     if (cookies.token || localToken) {
       navigate("/");
     }
-  }, [cookies, navigate]);
+  }, []);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -75,7 +75,7 @@ const Signup = () => {
 
         handleSuccess(`Welcome! Account created successfully!`);
         setTimeout(() => {
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         handleError(message);

@@ -21,7 +21,7 @@ const Login = () => {
     if (cookies.token || localToken) {
       navigate("/");
     }
-  }, [cookies, navigate]);
+  }, []);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -69,7 +69,7 @@ const Login = () => {
 
         handleSuccess(`Welcome back!`);
         setTimeout(() => {
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         handleError(message);
