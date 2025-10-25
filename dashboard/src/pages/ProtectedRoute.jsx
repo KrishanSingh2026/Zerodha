@@ -9,9 +9,14 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const hasToken = !!cookies.token;
+      //Check BOTH cookies AND localStorage
+      const hasCookieToken = !!cookies.token;
+      const hasLocalStorageToken = !!localStorage.getItem("token");
+      const hasToken = hasCookieToken || hasLocalStorageToken;
 
-      console.log("Token exists in cookies:", hasToken);
+      console.log("Token in cookies:", hasCookieToken);
+      console.log("Token in localStorage:", hasLocalStorageToken);
+      console.log("User authenticated:", hasToken);
 
       if (hasToken) {
         setIsAuthenticated(true);
