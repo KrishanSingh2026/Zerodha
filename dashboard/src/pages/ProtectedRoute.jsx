@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 const ProtectedRoute = ({ children }) => {
+  const [cookies] = useCookies(["token"]);
   const [isChecking, setIsChecking] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem("token");
-      console.log("Token exists:", !!token);
+      const hasToken = !!cookies.token;
 
-      if (token) {
+      console.log("Token exists in cookies:", hasToken);
+
+      if (hasToken) {
         setIsAuthenticated(true);
         console.log("User authenticated");
       } else {
@@ -22,7 +25,7 @@ const ProtectedRoute = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
+  }, [cookies.token]);
 
   if (isChecking) {
     return (
