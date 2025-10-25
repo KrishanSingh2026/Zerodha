@@ -7,6 +7,7 @@ import "./auth.css";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -40,44 +41,65 @@ const Login = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
       const { data } = await axios.post(
-        `${API_URL}/login`, // Use API_URL
+        `${API_URL}/login`,
         {
-          ...inputValue,
+          email: email.trim(),
+          password,
         },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      console.log(data);
-      const { success, message, token } = data; //  Get token from response
 
-      if (success) {
+      console.log("Login response:", data);
+
+      if (data.success) {
         // Save token to localStorage
-        if (token) {
-          localStorage.setItem("token", token);
+        if (data.token) {
+          localStorage.setItem("token", data.token);
         }
 
-        handleSuccess(`Welcome back!`);
+        handleSuccess(data.message || "Login successful!");
+
+        // Clear form
+        setInputValue({
+          email: "",
+          password: "",
+        });
+
+        // Navigate after delay
         setTimeout(() => {
           navigate("/", { replace: true });
-        }, 1000);
+        }, 1500);
       } else {
-        handleError(message);
+        handleError(data.message || "Login failed");
       }
     } catch (error) {
-      console.log(error);
-      handleError(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again."
-      );
-    }
+      console.error("Login error:", error);
 
-    setInputValue({
-      ...inputValue,
-      email: "",
-      password: "",
-      username: "",
-    });
+      // Handle different error scenarios
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage =
+          error.response.data?.message ||
+          error.response.data?.error ||
+          `Error: ${error.response.status}`;
+        handleError(errorMessage);
+      } else if (error.request) {
+        handleError("No response from server. Please check your connection.");
+      } else {
+        handleError(error.message || "Something went wrong");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,6 +117,7 @@ const Login = () => {
               placeholder="Enter your email"
               onChange={handleOnChange}
               required
+              disabled={loading}
             />
           </div>
           <div>
@@ -107,9 +130,12 @@ const Login = () => {
               placeholder="Enter your password"
               onChange={handleOnChange}
               required
+              disabled={loading}
             />
           </div>
-          <button type="submit">Login</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
           <span>
             Don't have an account? <Link to={"/signup"}>Signup</Link>
           </span>

@@ -7,6 +7,7 @@ import "./auth.css";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -46,43 +47,67 @@ const Signup = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
       const { data } = await axios.post(
-        `${API_URL}/signup`, // FIXED: Use API_URL
+        `${API_URL}/signup`,
         {
-          ...inputValue,
+          email: email.trim(),
+          password,
+          username: username.trim(),
         },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      const { success, message, token } = data; // Get token from response
+      console.log("Signup response:", data);
 
-      if (success) {
+      if (data.success) {
         // Save token to localStorage
-        if (token) {
-          localStorage.setItem("token", token);
+        if (data.token) {
+          localStorage.setItem("token", data.token);
         }
 
-        handleSuccess(`Welcome! Account created successfully!`);
+        handleSuccess(data.message || "Account created successfully!");
+
+        // Clear form
+        setInputValue({
+          email: "",
+          password: "",
+          username: "",
+        });
+
+        // Navigate after delay
         setTimeout(() => {
           navigate("/", { replace: true });
-        }, 1000);
+        }, 1500);
       } else {
-        handleError(message);
+        handleError(data.message || "Signup failed");
       }
     } catch (error) {
-      console.log(error);
-      handleError(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again."
-      );
-    }
+      console.error("Signup error:", error);
 
-    setInputValue({
-      email: "",
-      password: "",
-      username: "",
-    });
+      // Handle different error scenarios
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage =
+          error.response.data?.message ||
+          error.response.data?.error ||
+          `Error: ${error.response.status}`;
+        handleError(errorMessage);
+      } else if (error.request) {
+        handleError("No response from server. Please check your connection.");
+      } else {
+        handleError(error.message || "Something went wrong");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -100,6 +125,7 @@ const Signup = () => {
               placeholder="Enter your email"
               onChange={handleOnChange}
               required
+              disabled={loading}
             />
           </div>
           <div>
@@ -112,6 +138,7 @@ const Signup = () => {
               placeholder="Enter your username"
               onChange={handleOnChange}
               required
+              disabled={loading}
             />
           </div>
           <div>
@@ -125,9 +152,12 @@ const Signup = () => {
               onChange={handleOnChange}
               required
               minLength="6"
+              disabled={loading}
             />
           </div>
-          <button type="submit">Sign Up</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating Account..." : "Sign Up"}
+          </button>
           <span>
             Already have an account? <Link to={"/login"}>Login</Link>
           </span>
