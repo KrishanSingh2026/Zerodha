@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { VerticalGraph } from "./VerticalGraph";
 import GeneralContext from "./GeneralContext";
+import API_URL from "../config";
 
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
@@ -12,7 +13,7 @@ const Holdings = () => {
 
     // Force a fresh fetch by adding timestamp to prevent caching
     axios
-      .get(`http://localhost:3002/allHoldings?t=${Date.now()}`)
+      .get(`${API_URL}/allHoldings?t=${Date.now()}`)
       .then((res) => {
         console.log("Holdings data received:", res.data);
         setAllHoldings(res.data);
