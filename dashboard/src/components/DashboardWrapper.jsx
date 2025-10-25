@@ -4,7 +4,6 @@ import { useCookies } from "react-cookie";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import Home from "./Home";
-import API_URL from "../config";
 
 const DashboardWrapper = () => {
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ const DashboardWrapper = () => {
 
       try {
         const { data } = await axios.post(
-          API_URL,
+          "http://localhost:3002/",
           {},
           { withCredentials: true }
         );
