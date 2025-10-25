@@ -24,6 +24,7 @@ app.use(
       "http://localhost:3000",
       "https://zerodha-shxy.onrender.com",
       "https://zerodha-7vlo.onrender.com",
+      "https://zerodha-dashboard-o6sp.onrender.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
