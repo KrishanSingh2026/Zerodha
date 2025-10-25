@@ -41,6 +41,7 @@ module.exports.Signup = async (req, res, next) => {
       message: "User signed up successfully",
       success: true,
       user: user.username,
+      token: token,
     });
   } catch (error) {
     console.error("Signup error:", error);
