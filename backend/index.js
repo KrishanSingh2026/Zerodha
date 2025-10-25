@@ -15,7 +15,12 @@ const uri = process.env.MONGO_URL;
 
 const app = express();
 
-// CORS configuration - Allow both ports
+// IMPORTANT: Middleware order matters
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// CORS configuration
 app.use(
   cors({
     origin: [
@@ -26,14 +31,14 @@ app.use(
       "https://zerodha-7vlo.onrender.com",
       "https://zerodha-dashboard-o6sp.onrender.com",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+// Handle preflight requests
+app.options("*", cors());
 
 // MongoDB Connection
 mongoose
@@ -42,21 +47,39 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB is connected successfully"))
-  .catch((err) => console.error(err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
 
-// Auth Routes
+// Test route
+app.get("/", (req, res) => {
+  res.json({ message: "Server is running!" });
+});
+
+// Auth Routes - MUST come before other routes
 app.use("/", authRoute);
 
 // Holdings Routes
 app.get("/allHoldings", async (req, res) => {
-  let allHoldings = await HoldingsModel.find({});
-  res.json(allHoldings);
+  try {
+    let allHoldings = await HoldingsModel.find({});
+    res.json(allHoldings);
+  } catch (error) {
+    console.error("Error fetching holdings:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Positions Routes
 app.get("/allPositions", async (req, res) => {
-  let allPositions = await PositionsModel.find({});
-  res.json(allPositions);
+  try {
+    let allPositions = await PositionsModel.find({});
+    res.json(allPositions);
+  } catch (error) {
+    console.error("Error fetching positions:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Buy Order Route
@@ -160,12 +183,30 @@ app.post("/newSellOrder", async (req, res) => {
 
 // All Orders Route
 app.get("/allOrders", async (req, res) => {
-  let allOrders = await OrdersModel.find({});
-  res.json(allOrders);
+  try {
+    let allOrders = await OrdersModel.find({});
+    res.json(allOrders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error("Server error:", err);
+  res.status(500).json({
+    message: "Internal server error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
+  });
 });
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`App is listening on ${PORT}`);
-  console.log("DB connected!");
+  console.log(`Server is running on port ${PORT}`);
 });
