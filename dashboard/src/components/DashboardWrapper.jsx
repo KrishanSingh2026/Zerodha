@@ -13,59 +13,99 @@ const DashboardWrapper = () => {
   const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
+    console.log("🔍 DashboardWrapper mounted");
+    console.log("🔍 API_URL:", API_URL);
+    console.log("🔍 Cookies:", cookies);
+    console.log("🔍 LocalStorage token:", localStorage.getItem("token"));
+
     const verifyCookie = async () => {
-      if (!cookies.token) {
+      // Check localStorage instead of cookies since that's where token is stored
+      const token = localStorage.getItem("token");
+      const storedUsername = localStorage.getItem("username");
+
+      console.log("🔍 Token from localStorage:", token);
+      console.log("🔍 Username from localStorage:", storedUsername);
+
+      if (!token) {
+        console.log("❌ No token found, redirecting to login");
         navigate("/login");
         return;
       }
 
+      // If we have both token and username in localStorage, use them directly
+      if (token && storedUsername) {
+        console.log("✅ Using stored credentials");
+        setUsername(storedUsername);
+        setIsVerified(true);
+
+        toast.success(`Welcome back, ${storedUsername}!`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        return;
+      }
+
+      // Otherwise verify with backend
       try {
+        console.log("🔄 Verifying with backend...");
         const { data } = await axios.post(
           `${API_URL}/`,
           {},
           { withCredentials: true }
         );
+
+        console.log("✅ Backend response:", data);
+
         const { status, user } = data;
 
         if (status) {
           setUsername(user);
           setIsVerified(true);
 
-          // Show welcome toast only once
           toast.success(`Welcome back, ${user}!`, {
             position: "top-right",
             autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
           });
         } else {
+          console.log("❌ Backend returned status false");
           removeCookie("token");
+          localStorage.removeItem("token");
+          localStorage.removeItem("username");
           navigate("/login");
         }
       } catch (error) {
-        console.log(error);
+        console.error("❌ Backend verification error:", error);
         removeCookie("token");
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
         navigate("/login");
       }
     };
 
     verifyCookie();
-  }, [cookies.token, navigate, removeCookie]);
+  }, [navigate, removeCookie]);
 
   const handleLogout = () => {
+    console.log("🚪 Logging out...");
     removeCookie("token", { path: "/" });
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+
     toast.info("Logging out...", {
       position: "top-right",
       autoClose: 1000,
     });
+
     setTimeout(() => {
       navigate("/login");
     }, 1000);
   };
 
+  console.log("🔍 isVerified:", isVerified);
+  console.log("🔍 username:", username);
+
   if (!isVerified) {
+    console.log("⏳ Showing loading screen");
     return (
       <div
         style={{
@@ -99,6 +139,8 @@ const DashboardWrapper = () => {
       </div>
     );
   }
+
+  console.log("✅ Rendering Home component");
 
   return (
     <>
