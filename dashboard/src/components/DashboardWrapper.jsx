@@ -21,7 +21,7 @@ const DashboardWrapper = () => {
 
       try {
         const { data } = await axios.post(
-          API_URL,
+          `${API_URL}/`,
           {},
           { withCredentials: true }
         );
