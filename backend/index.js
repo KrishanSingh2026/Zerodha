@@ -15,30 +15,39 @@ const uri = process.env.MONGO_URL;
 
 const app = express();
 
-// IMPORTANT: Middleware order matters
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-// CORS configuration
 app.use(
   cors({
     origin: [
-      "http://localhost:3002",
-      "http://localhost:3001",
+      // Local development
       "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:3002",
+      // Production - ALL deployed apps
       "https://zerodha-shxy.onrender.com",
       "https://zerodha-7vlo.onrender.com",
       "https://zerodha-dashboard-o6sp.onrender.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
 );
 
-// Handle preflight requests
+// Handle preflight OPTIONS requests
 app.options("*", cors());
+
+// Body parsers - AFTER CORS
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(
+    `${req.method} ${req.path} - Origin: ${req.headers.origin || "none"}`
+  );
+  next();
+});
 
 // MongoDB Connection
 mongoose
@@ -49,12 +58,14 @@ mongoose
   .then(() => console.log("MongoDB is connected successfully"))
   .catch((err) => {
     console.error("MongoDB connection error:", err);
-    process.exit(1);
   });
 
-// Test route
+// Test endpoint
 app.get("/", (req, res) => {
-  res.json({ message: "Server is running!" });
+  res.json({
+    message: "Zerodha Backend API is running",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Auth Routes
@@ -86,6 +97,13 @@ app.get("/allPositions", async (req, res) => {
 app.post("/newBuyOrder", async (req, res) => {
   try {
     const { name, qty, price, mode } = req.body;
+
+    if (!name || !qty || !price || !mode) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
 
     let newOrder = new OrdersModel({
       name,
@@ -135,6 +153,13 @@ app.post("/newBuyOrder", async (req, res) => {
 app.post("/newSellOrder", async (req, res) => {
   try {
     const { name, qty, price, mode } = req.body;
+
+    if (!name || !qty || !price || !mode) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
 
     let holding = await HoldingsModel.findOne({ name });
 
@@ -194,7 +219,10 @@ app.get("/allOrders", async (req, res) => {
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
+  res.status(404).json({
+    message: "Route not found",
+    path: req.path,
+  });
 });
 
 // Error handler
@@ -208,5 +236,5 @@ app.use((err, req, res, next) => {
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(` Server is running on port ${PORT}`);
 });
