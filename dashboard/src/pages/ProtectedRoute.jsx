@@ -6,13 +6,24 @@ const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check for token
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-    setIsChecking(false);
+    const checkAuth = () => {
+      const token = localStorage.getItem("token");
+      console.log("Token exists:", !!token);
+
+      if (token) {
+        setIsAuthenticated(true);
+        console.log("User authenticated");
+      } else {
+        setIsAuthenticated(false);
+        console.log("User NOT authenticated - will redirect to login");
+      }
+
+      setIsChecking(false);
+    };
+
+    checkAuth();
   }, []);
 
-  // Show loading while checking
   if (isChecking) {
     return (
       <div
@@ -21,19 +32,21 @@ const ProtectedRoute = ({ children }) => {
           justifyContent: "center",
           alignItems: "center",
           height: "100vh",
+          fontSize: "18px",
+          fontFamily: "Arial, sans-serif",
         }}
       >
-        Loading...
+        <div>Loading...</div>
       </div>
     );
   }
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated) {
+    console.log("Redirecting to /login");
     return <Navigate to="/login" replace />;
   }
 
-  // Show protected content
+  console.log("Rendering protected content");
   return children;
 };
 

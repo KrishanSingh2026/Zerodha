@@ -19,7 +19,7 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected routes */}
+        {/* Protected dashboard route */}
         <Route
           path="/"
           element={
@@ -29,7 +29,7 @@ root.render(
           }
         />
 
-        {/* Catch all other routes and protect them too */}
+        {/* Catch all other routes */}
         <Route
           path="*"
           element={

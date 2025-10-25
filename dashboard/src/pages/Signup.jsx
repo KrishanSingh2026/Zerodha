@@ -36,7 +36,6 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!email || !password || !username) {
       handleError("Please fill in all fields");
       return;
@@ -68,33 +67,33 @@ const Signup = () => {
       console.log("Signup response:", data);
 
       if (data.success) {
-        // Save token to localStorage
         if (data.token) {
           localStorage.setItem("token", data.token);
+          console.log("Token saved to localStorage");
+        }
+        if (data.user) {
+          localStorage.setItem("username", data.user);
+          console.log("Username saved:", data.user);
         }
 
         handleSuccess(data.message || "Account created successfully!");
 
-        // Clear form
         setInputValue({
           email: "",
           password: "",
           username: "",
         });
-
-        // Navigate after delay
+        console.log(" Redirecting to dashboard in 1 second...");
         setTimeout(() => {
-          navigate("/", { replace: true });
-        }, 1500);
+          window.location.href = "/";
+        }, 1000);
       } else {
         handleError(data.message || "Signup failed");
       }
     } catch (error) {
       console.error("Signup error:", error);
 
-      // Handle different error scenarios
       if (error.response) {
-        // Server responded with error status
         const errorMessage =
           error.response.data?.message ||
           error.response.data?.error ||
