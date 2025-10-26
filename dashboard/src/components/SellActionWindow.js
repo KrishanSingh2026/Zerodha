@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
 import "./SellActionWindow.css";
+import API_URL from "../config";
 
 const SellActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
@@ -16,7 +17,7 @@ const SellActionWindow = ({ uid }) => {
   useEffect(() => {
     const fetchHoldings = async () => {
       try {
-        const response = await axios.get("http://localhost:3002/allHoldings");
+        const response = await axios.get(`${API_URL}/allHoldings`);
         const holding = response.data.find((h) => h.name === uid);
 
         if (holding) {
@@ -25,9 +26,7 @@ const SellActionWindow = ({ uid }) => {
           setStockPrice(holding.price);
         } else {
           // Check positions if not in holdings
-          const posResponse = await axios.get(
-            "http://localhost:3002/allPositions"
-          );
+          const posResponse = await axios.get(`${API_URL}/allPositions`);
           const position = posResponse.data.find((p) => p.name === uid);
 
           if (position) {
@@ -70,7 +69,7 @@ const SellActionWindow = ({ uid }) => {
     });
 
     axios
-      .post("http://localhost:3002/newSellOrder", {
+      .post(`${API_URL}/newSellOrder`, {
         name: uid,
         qty: stockQuantity,
         price: stockPrice,

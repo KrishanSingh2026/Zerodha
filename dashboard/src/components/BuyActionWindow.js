@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
 import "./BuyActionWindow.css";
+import API_URL from "../config";
 
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
@@ -28,7 +29,7 @@ const BuyActionWindow = ({ uid }) => {
     });
 
     axios
-      .post("http://localhost:3002/newBuyOrder", {
+      .post(`${API_URL}/newBuyOrder`, {
         name: uid,
         qty: stockQuantity,
         price: stockPrice,
