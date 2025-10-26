@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
@@ -7,26 +7,28 @@ import { toast } from "react-toastify";
 function Navbar() {
   const [cookies, removeCookie] = useCookies(["token"]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const localToken = localStorage.getItem("token");
-    setIsLoggedIn(!!(cookies.token || localToken));
-  }, [cookies.token]);
+  // Check if user is logged in by checking both cookie and localStorage
+  const isLoggedIn = !!(cookies.token || localStorage.getItem("token"));
 
   const handleLogout = () => {
+    // Remove cookie with all possible paths
     removeCookie("token", { path: "/" });
+    removeCookie("token", { path: "/", domain: window.location.hostname });
+
+    // Clear localStorage
     localStorage.removeItem("token");
+    localStorage.removeItem("user"); // Clear any other auth data if exists
 
     toast.success("Logged out successfully", {
       position: "top-right",
     });
-    setIsLoggedIn(false);
+
     closeNavbar();
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
+
+    // Force a re-render by navigating immediately
+    navigate("/login", { replace: true });
   };
 
   const toggleNavbar = () => {
