@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { useCookies } from "react-cookie";
+import { useAuth } from "./AuthContext";
 import API_URL from "../config";
 import "./auth.css";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [cookies] = useCookies(["token"]);
+  const { isAuthenticated, login } = useAuth();
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -18,11 +18,10 @@ const Signup = () => {
 
   // Redirect if already logged in
   React.useEffect(() => {
-    const localToken = localStorage.getItem("token");
-    if (cookies.token || localToken) {
-      navigate("/");
+    if (isAuthenticated) {
+      navigate("/", { replace: true });
     }
-  }, [cookies, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -68,15 +67,15 @@ const Signup = () => {
       const { success, message, user, token } = data;
 
       if (success) {
-        // Save token to localStorage
+        // Use the context login function
         if (token) {
-          localStorage.setItem("token", token);
+          login(token);
         }
 
         handleSuccess(`Welcome to Zerodha, ${user}!`);
         setTimeout(() => {
-          navigate("/");
-        }, 1500);
+          navigate("/", { replace: true });
+        }, 1000);
       } else {
         handleError(message);
       }

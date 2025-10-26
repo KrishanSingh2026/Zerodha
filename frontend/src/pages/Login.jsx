@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { useCookies } from "react-cookie";
+import { useAuth } from "./Authcontext";
 import API_URL from "../config";
 import "./auth.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [cookies] = useCookies(["token"]);
+  const { isAuthenticated, login } = useAuth();
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -17,11 +17,10 @@ const Login = () => {
 
   // Redirect if already logged in
   React.useEffect(() => {
-    const localToken = localStorage.getItem("token");
-    if (cookies.token || localToken) {
-      navigate("/");
+    if (isAuthenticated) {
+      navigate("/", { replace: true });
     }
-  }, [cookies, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -58,14 +57,15 @@ const Login = () => {
         },
         { withCredentials: true }
       );
-      console.log(data);
+
       const { success, message, user, token } = data;
       if (success) {
-        localStorage.setItem("token", token);
+        // Use the context login function
+        login(token);
         handleSuccess(`Welcome back, ${user}!`);
         setTimeout(() => {
-          navigate("/");
-        }, 1500);
+          navigate("/", { replace: true });
+        }, 1000);
       } else {
         handleError(message);
       }
@@ -76,8 +76,8 @@ const Login = () => {
           "Something went wrong. Please try again."
       );
     }
+
     setInputValue({
-      ...inputValue,
       email: "",
       password: "",
     });

@@ -1,33 +1,19 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
+import { useAuth } from "../pages/Authcontext";
 
 function Navbar() {
-  const [cookies, removeCookie] = useCookies(["token"]);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-
-  // Check if user is logged in by checking both cookie and localStorage
-  const isLoggedIn = !!(cookies.token || localStorage.getItem("token"));
+  const { isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
-    // Remove cookie with all possible paths
-    removeCookie("token", { path: "/" });
-    removeCookie("token", { path: "/", domain: window.location.hostname });
-
-    // Clear localStorage
-    localStorage.removeItem("token");
-    localStorage.removeItem("user"); // Clear any other auth data if exists
-
+    logout();
     toast.success("Logged out successfully", {
       position: "top-right",
     });
-
     closeNavbar();
-
-    // Force a re-render by navigating immediately
     navigate("/login", { replace: true });
   };
 
@@ -95,7 +81,7 @@ function Navbar() {
             </li>
           </ul>
           <div className="d-flex">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <button
                 className="btn btn-danger"
                 type="button"
