@@ -5,6 +5,9 @@ import { CookiesProvider } from "react-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
+// Import AuthProvider
+import { AuthProvider } from "./pages/Authcontext.js";
+
 // Landing page components
 import HomePage from "./landing_page/home/HomePage";
 import AboutPage from "./landing_page/about/AboutPage";
@@ -87,7 +90,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <CookiesProvider>
     <BrowserRouter>
-      <Layout />
+      <AuthProvider>
+        <Layout />
+      </AuthProvider>
     </BrowserRouter>
   </CookiesProvider>
 );

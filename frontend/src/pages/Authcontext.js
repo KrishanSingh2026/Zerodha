@@ -9,14 +9,10 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
-  }, [cookies.token]);
-
-  const checkAuth = () => {
     const token = cookies.token || localStorage.getItem("token");
     setIsAuthenticated(!!token);
     setLoading(false);
-  };
+  }, [cookies.token]);
 
   const login = (token) => {
     localStorage.setItem("token", token);
